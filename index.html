@@ -15,12 +15,49 @@
             background-color: #f5f5f5;
         }
 
+        /* 顶部图片 */
         .top-image {
             width: 100%;
             display: block;
         }
 
-        /* 文字轮播容器，位于轮播图正上方 */
+        /* 三个蕾丝文字框：纵向排列 */
+        .middle-text-boxes {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 12px 16px;
+        }
+        .lace-box {
+            width: 100%;
+            padding: 3.2vw 3vw;
+            text-align: center;
+            color: #ffffff;
+            font-size: 3.4vw;
+            font-weight: 600;
+            border-radius: 16px;
+            background-color: #000000;
+            border: 2px solid transparent;
+            background-image: linear-gradient(#000,#000),
+                              linear-gradient(45deg,#ff4670,#ffb040,#ff4670,#9728ff,#ff4670);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            box-shadow: 0 0 12px rgba(255, 110, 150, 0.55),
+                        0 0 22px rgba(255, 176, 64, 0.35);
+            position: relative;
+        }
+        .lace-box::before {
+            content: "";
+            position: absolute;
+            inset: -6px;
+            border-radius: 20px;
+            background: linear-gradient(45deg,#ff4670,#ffb040,#9728ff,#ff4670);
+            filter: blur(10px);
+            opacity: 0.6;
+            z-index: -1;
+        }
+
+        /* 上方文字滑动区（跟随轮播） */
         .text-swiper-wrap {
             width: 100%;
             overflow: hidden;
@@ -35,7 +72,7 @@
             padding: 0 4%;
         }
         .text-card {
-            background-color: rgba(255, 158, 144, 0.85);
+            background-color: rgba(255, 158, 144, 0.88);
             color: #ffffff;
             padding: 2.5vw 3vw;
             border-radius: 2.5vw;
@@ -43,15 +80,15 @@
         .text-card h4 {
             font-size: 3.8vw;
             margin-bottom: 1vw;
-            font-weight: 500;
+            font-weight: 600;
         }
         .text-card p {
             font-size: 3.2vw;
-            opacity: 0.95;
+            opacity: 0.96;
             line-height: 1.4;
         }
 
-        /* 图片轮播 */
+        /* 轮播图 */
         .banner-wrap {
             position: relative;
             width: 100%;
@@ -69,7 +106,6 @@
             width: 100%;
             display: block;
         }
-
         .banner-dots {
             position: absolute;
             bottom: 12px;
@@ -87,13 +123,53 @@
         .dot.active {
             background: #ff7d00;
         }
+
+        /* 轮播图下方图片展示区，文字框在左侧 */
+        .bottom-gallery {
+            margin-top: 12px;
+            padding: 0 4%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-direction: row-reverse;
+        }
+        .bottom-gallery img {
+            width: 55%;
+            border-radius: 12px;
+            display: block;
+        }
+        .bottom-side-box {
+            flex: 1;
+            background-color: #ffffff;
+            border: 1px solid #e5e5e5;
+            border-radius: 12px;
+            padding: 14px;
+        }
+        .bottom-side-box h5 {
+            font-size: 15px;
+            margin-bottom: 6px;
+            color: #222;
+        }
+        .bottom-side-box p {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+        }
     </style>
 </head>
 <body>
 
+    <!-- 第一张图片 -->
     <img class="top-image" src="img1.jpg" alt="顶部图片">
 
-    <!-- 文字轮播：轮播图正上方，独立轨道，跟随轮播滑动 -->
+    <!-- 三个黑色蕾丝文字框：纵向排列 -->
+    <div class="middle-text-boxes">
+        <div class="lace-box">文字一</div>
+        <div class="lace-box">文字二</div>
+        <div class="lace-box">文字三</div>
+    </div>
+
+    <!-- 跟随轮播的文案区 -->
     <div class="text-swiper-wrap">
         <div class="text-swiper-track" id="textSwiperTrack">
             <div class="text-swiper-item">
@@ -123,7 +199,7 @@
         </div>
     </div>
 
-    <!-- 图片轮播区域 -->
+    <!-- 轮播图 -->
     <div class="banner-wrap">
         <div class="banner-track" id="bannerTrack">
             <div class="banner-item">
@@ -142,6 +218,15 @@
         <div class="banner-dots" id="bannerDots"></div>
     </div>
 
+    <!-- 底部区域：文字框在图片左边 -->
+    <section class="bottom-gallery">
+        <img src="dl.jpg" alt="底部展示图片">
+        <div class="bottom-side-box">
+            <h5>标题</h5>
+            <p>这里填写图片旁边的描述文案，采用默认样式展示。</p>
+        </div>
+    </section>
+
 <script>
     const bannerTrack = document.getElementById('bannerTrack');
     const textSwiperTrack = document.getElementById('textSwiperTrack');
@@ -150,7 +235,10 @@
     const total = items.length;
     let index = 0;
     let touchStartX = 0;
+    let touchMoveX = 0;
+    let timer = null;
 
+    // 生成指示器圆点
     for(let i = 0; i < total; i++){
         const dot = document.createElement('div');
         dot.className = 'dot' + (i === 0 ? ' active' : '');
@@ -158,11 +246,13 @@
     }
     const dots = dotsWrap.querySelectorAll('.dot');
 
+    // 跳转，图片与文案同步
     function goTo(idx){
         index = idx;
         if(index >= total) index = 0;
         if(index < 0) index = total - 1;
-        // 图片轨道、文字轨道同步位移
+        bannerTrack.style.transition = 'transform 0.3s ease';
+        textSwiperTrack.style.transition = 'transform 0.3s ease';
         bannerTrack.style.transform = `translateX(-${index * 100}%)`;
         textSwiperTrack.style.transform = `translateX(-${index * 100}%)`;
         dots.forEach((d, i) => {
@@ -170,27 +260,44 @@
         });
     }
 
-    let timer = setInterval(() => {
-        goTo(index + 1);
-    }, 3000);
-
-    bannerTrack.addEventListener('touchstart', (e) => {
-        touchStartX = e.touches[0].clientX;
+    // 自动轮播
+    function startAutoPlay(){
         clearInterval(timer);
-    });
+        timer = setInterval(()=>{
+            goTo(index + 1);
+        },3000);
+    }
+    startAutoPlay();
 
-    bannerTrack.addEventListener('touchend', (e) => {
-        const endX = e.changedTouches[0].clientX;
-        const diff = endX - touchStartX;
-        if(diff < -50){
+    // touchstart：记录起始坐标，关闭动画、关闭自动轮播
+    bannerTrack.addEventListener('touchstart',(e)=>{
+        touchStartX = e.touches[0].clientX;
+        touchMoveX = 0;
+        bannerTrack.style.transition = 'none';
+        textSwiperTrack.style.transition = 'none';
+        clearInterval(timer);
+    })
+
+    // touchmove：跟随手指实时拖动，图片、文案一起跟随偏移
+    bannerTrack.addEventListener('touchmove',(e)=>{
+        touchMoveX = e.touches[0].clientX - touchStartX;
+        const offset = (-index * 100) + (touchMoveX / bannerTrack.offsetWidth * 100);
+        bannerTrack.style.transform = `translateX(${offset}%)`;
+        textSwiperTrack.style.transform = `translateX(${offset}%)`;
+    })
+
+    // touchend：松手判断滑动距离，切换页面，恢复动画、重启自动轮播
+    bannerTrack.addEventListener('touchend',()=>{
+        const movePercent = touchMoveX / bannerTrack.offsetWidth;
+        if(movePercent < -0.15){
             goTo(index + 1);
-        }else if(diff > 50){
+        }else if(movePercent > 0.15){
             goTo(index - 1);
+        }else{
+            goTo(index);
         }
-        timer = setInterval(() => {
-            goTo(index + 1);
-        }, 3000);
-    });
+        startAutoPlay();
+    })
 </script>
 
 </body>
