@@ -1,10 +1,197 @@
 <!DOCTYPE html>
-<html lang="zh‑CN">
+<html lang="zh-CN">
 <head>
-<meta charset="UTF‑8">
-<title>表头</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>我的网站</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        .top-image {
+            width: 100%;
+            display: block;
+        }
+
+        /* 文字轮播容器，位于轮播图正上方 */
+        .text-swiper-wrap {
+            width: 100%;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        .text-swiper-track {
+            display: flex;
+            transition: transform 0.3s ease;
+        }
+        .text-swiper-item {
+            flex: 0 0 100%;
+            padding: 0 4%;
+        }
+        .text-card {
+            background-color: rgba(255, 158, 144, 0.85);
+            color: #ffffff;
+            padding: 2.5vw 3vw;
+            border-radius: 2.5vw;
+        }
+        .text-card h4 {
+            font-size: 3.8vw;
+            margin-bottom: 1vw;
+            font-weight: 500;
+        }
+        .text-card p {
+            font-size: 3.2vw;
+            opacity: 0.95;
+            line-height: 1.4;
+        }
+
+        /* 图片轮播 */
+        .banner-wrap {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        .banner-track {
+            display: flex;
+            transition: transform 0.3s ease;
+        }
+        .banner-item {
+            flex: 0 0 100%;
+        }
+        .banner-item img {
+            width: 100%;
+            display: block;
+        }
+
+        .banner-dots {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ccc;
+        }
+        .dot.active {
+            background: #ff7d00;
+        }
+    </style>
 </head>
 <body>
-内容
+
+    <img class="top-image" src="img1.jpg" alt="顶部图片">
+
+    <!-- 文字轮播：轮播图正上方，独立轨道，跟随轮播滑动 -->
+    <div class="text-swiper-wrap">
+        <div class="text-swiper-track" id="textSwiperTrack">
+            <div class="text-swiper-item">
+                <div class="text-card">
+                    <h4>标题一</h4>
+                    <p>第一张轮播对应的文案内容</p>
+                </div>
+            </div>
+            <div class="text-swiper-item">
+                <div class="text-card">
+                    <h4>标题二</h4>
+                    <p>第二张轮播对应的文案内容</p>
+                </div>
+            </div>
+            <div class="text-swiper-item">
+                <div class="text-card">
+                    <h4>标题三</h4>
+                    <p>第三张轮播对应的文案内容</p>
+                </div>
+            </div>
+            <div class="text-swiper-item">
+                <div class="text-card">
+                    <h4>标题四</h4>
+                    <p>第四张轮播对应的文案内容</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 图片轮播区域 -->
+    <div class="banner-wrap">
+        <div class="banner-track" id="bannerTrack">
+            <div class="banner-item">
+                <img src="img11.jpg" alt="轮播图1">
+            </div>
+            <div class="banner-item">
+                <img src="img12.jpg" alt="轮播图2">
+            </div>
+            <div class="banner-item">
+                <img src="img13.jpg" alt="轮播图3">
+            </div>
+            <div class="banner-item">
+                <img src="img14.jpg" alt="轮播图4">
+            </div>
+        </div>
+        <div class="banner-dots" id="bannerDots"></div>
+    </div>
+
+<script>
+    const bannerTrack = document.getElementById('bannerTrack');
+    const textSwiperTrack = document.getElementById('textSwiperTrack');
+    const dotsWrap = document.getElementById('bannerDots');
+    const items = bannerTrack.querySelectorAll('.banner-item');
+    const total = items.length;
+    let index = 0;
+    let touchStartX = 0;
+
+    for(let i = 0; i < total; i++){
+        const dot = document.createElement('div');
+        dot.className = 'dot' + (i === 0 ? ' active' : '');
+        dotsWrap.appendChild(dot);
+    }
+    const dots = dotsWrap.querySelectorAll('.dot');
+
+    function goTo(idx){
+        index = idx;
+        if(index >= total) index = 0;
+        if(index < 0) index = total - 1;
+        // 图片轨道、文字轨道同步位移
+        bannerTrack.style.transform = `translateX(-${index * 100}%)`;
+        textSwiperTrack.style.transform = `translateX(-${index * 100}%)`;
+        dots.forEach((d, i) => {
+            d.classList.toggle('active', i === index);
+        });
+    }
+
+    let timer = setInterval(() => {
+        goTo(index + 1);
+    }, 3000);
+
+    bannerTrack.addEventListener('touchstart', (e) => {
+        touchStartX = e.touches[0].clientX;
+        clearInterval(timer);
+    });
+
+    bannerTrack.addEventListener('touchend', (e) => {
+        const endX = e.changedTouches[0].clientX;
+        const diff = endX - touchStartX;
+        if(diff < -50){
+            goTo(index + 1);
+        }else if(diff > 50){
+            goTo(index - 1);
+        }
+        timer = setInterval(() => {
+            goTo(index + 1);
+        }, 3000);
+    });
+</script>
+
 </body>
 </html>
