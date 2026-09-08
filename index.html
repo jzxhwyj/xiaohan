@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>我的网站</title>
+    <title>猫猫游戏社</title>
     <style>
         * {
             margin: 0;
@@ -164,9 +164,9 @@
 
     <!-- 三个黑色蕾丝文字框：纵向排列 -->
     <div class="middle-text-boxes">
-        <div class="lace-box">文字一</div>
-        <div class="lace-box">文字二</div>
-        <div class="lace-box">文字三</div>
+        <div class="lace-box">1，未成年勿扰</div>
+        <div class="lace-box">2，起单时间由双方协商决定</div>
+        <div class="lace-box">3，亲密举动和夜间陪玩需征求女方同意</div>
     </div>
 
     <!-- 跟随轮播的文案区 -->
@@ -174,26 +174,26 @@
         <div class="text-swiper-track" id="textSwiperTrack">
             <div class="text-swiper-item">
                 <div class="text-card">
-                    <h4>标题一</h4>
-                    <p>第一张轮播对应的文案内容</p>
+                    <h4>猫猫酱</h4>
+                    <p>165厘米，反差，听话</p>
                 </div>
             </div>
             <div class="text-swiper-item">
                 <div class="text-card">
-                    <h4>标题二</h4>
-                    <p>第二张轮播对应的文案内容</p>
+                    <h4>瑶瑶</h4>
+                    <p>175厘米，御姐风，cos</p>
                 </div>
             </div>
             <div class="text-swiper-item">
                 <div class="text-card">
-                    <h4>标题三</h4>
-                    <p>第三张轮播对应的文案内容</p>
+                    <h4>小雨</h4>
+                    <p>158厘米，可爱风，甜妹</p>
                 </div>
             </div>
             <div class="text-swiper-item">
                 <div class="text-card">
-                    <h4>标题四</h4>
-                    <p>第四张轮播对应的文案内容</p>
+                    <h4>梦黎</h4>
+                    <p>177厘米，喜欢户外，辣妹，</p>
                 </div>
             </div>
         </div>
@@ -222,8 +222,8 @@
     <section class="bottom-gallery">
         <img src="dl.jpg" alt="底部展示图片">
         <div class="bottom-side-box">
-            <h5>标题</h5>
-            <p>这里填写图片旁边的描述文案，采用默认样式展示。</p>
+            <h5>温馨提示</h5>
+            <p>右侧扫码赞赏</p>
         </div>
     </section>
 
@@ -238,14 +238,7 @@
     let touchMoveX = 0;
     let timer = null;
 
-    // 生成指示器圆点
-    for(let i = 0; i < total; i++){
-        const dot = document.createElement('div');
-        dot.className = 'dot' + (i === 0 ? ' active' : '');
-        dotsWrap.appendChild(dot);
-    }
-    const dots = dotsWrap.querySelectorAll('.dot');
-
+  
     // 跳转，图片与文案同步
     function goTo(idx){
         index = idx;
